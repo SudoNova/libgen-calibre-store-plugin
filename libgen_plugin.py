@@ -15,9 +15,13 @@ from calibre.gui2.store import StorePlugin
 from calibre.gui2.store.search_result import SearchResult
 from calibre.gui2.store.basic_config import BasicStoreConfig
 from calibre.gui2.store.web_store_dialog import WebStoreDialog
+from calibre.constants import is_debugging
 
 BASE_URL = "https://libgen.is"
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"
+debug = is_debugging()
+if debug:
+    print("Libgen store plugin debug is enabled")
 
 #####################################################################
 # Plug-in base class
@@ -32,8 +36,9 @@ def search_libgen(query, max_results=10, timeout=60):
     br = browser(user_agent=USER_AGENT)
     raw = br.open(search_url).read()
     soup = BeautifulSoup(raw, "html5lib")
-
     trs = soup.select('table[class="c"] > tbody > tr')
+    if debug:
+        print(trs)
     count = 0
     for item in trs:
         index = trs.index(item)
@@ -74,7 +79,7 @@ def search_libgen(query, max_results=10, timeout=60):
 
 class LibgenStorePlugin(BasicStoreConfig, StorePlugin):
     def open(self, parent=None, detail_item=None, external=False):
-        url = BASE_URL
+        url = BsASE_URL
 
         if external or self.config.get("open_external", False):
             open_url(QUrl(url_slash_cleaner(detail_item if detail_item else url)))
